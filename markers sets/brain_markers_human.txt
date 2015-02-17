@@ -1,0 +1,11 @@
+"GENE NAME" "Class name"
+"STMN2" "Neuron"
+"BRUNOL4" "Neuron"
+"BRUNOL5" "Neuron"
+"BRUNOL6" "Neuron"
+"SYT1" "Neuron"
+"GFAP" "Astrocytes"
+"ALDH1L1" "Astrocytes"
+"OLIG2" "Oligodendrocytes"
+"MBP" "Oligodendrocytes"
+

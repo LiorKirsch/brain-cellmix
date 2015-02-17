@@ -1,0 +1,6 @@
+*~
+deconv input/
+cellmix results/
+data/
+figures/
+*.mat

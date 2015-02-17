@@ -1,0 +1,12 @@
+Microarray expression for 64 cell types from the mouse brain.
+
+This data was gathered by Benjamin Okaty.
+As described in:
+
+A Quantitative Comparison of Cell-Type-Specific Microarray Gene Expression Profiling Methods in the Mouse Brain
+Okaty et al.  PLoS one 2011
+
+
+Files:
+mouse_cell_type_profiles.mat
+
