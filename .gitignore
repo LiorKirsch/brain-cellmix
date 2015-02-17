@@ -4,3 +4,4 @@ cellmix results/
 data/
 figures/
 *.mat
+makers subsets/
