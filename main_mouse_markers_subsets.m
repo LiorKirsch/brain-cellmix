@@ -7,9 +7,8 @@ markers_file = 'markers sets/brain_markers_mouse.txt';
 dataset_name = 'zapala';
 input_mat_file_name = 'deconv input/deconv_for_zapala.mat';
 output_mat_file_name = sprintf('cellmix results/cellmix_%s_nmf.mat', dataset_name);
-[expression, gross_region_vec, gene_info, samples2subjects, gross_structures_info, ~] = load_expression_and_regions('zapalaMouse', []);
+% [expression, gross_region_vec, gene_info, samples2subjects, gross_structures_info, ~] = load_expression_and_regions('zapalaMouse', []);
 % create_data_for_deconv(expression, gene_info,input_mat_file_name);
-check_different_markers_subsets(input_mat_file_name, output_mat_file_name, markers_file);
 
 
 %===  Akahoshi data  ===
@@ -24,13 +23,8 @@ check_different_markers_subsets(input_mat_file_name, output_mat_file_name, marke
 % create_data_for_deconv(expression, gene_info,'deconv_input/deconv_for_allen_cortex');
 
 
-% load celltype expression from Okaty PLoS One
-
-% do deconvolution using the cell marker with the two methods and compare
-% the expression profile with those collect by Okaty.
-
+output_files = check_different_markers_subsets(input_mat_file_name, output_mat_file_name, markers_file);
 cell_mix = load(output_mat_file_name);
-% cell_mix = load(sprintf('cellmix_%s_Deconf.mat', dataset_name));
 
 
 compare_deconv_to_okaty_cell_type(cell_mix, gene_info, 'mouse');
@@ -57,26 +51,32 @@ function create_data_for_deconv(expression, gene_info, matfile_name)
 
 end
 
-function check_different_markers_subsets(input_mat_file_name, output_mat_file_name,marker_file_name)
+function output_files = check_different_markers_subsets(input_mat_file_name, output_mat_file_name,marker_file_name)
     C = textscan(fopen(marker_file_name),'%q %q','HeaderLines',1,'Delimiter',' ');
     gene_names = C{1};
     marker_type = C{2};
     
-    [~,file_name,ext] = fileparts(marker_file_name);
+    [~,marker_file_name,ext] = fileparts(marker_file_name);
+    marker_file_name = sprintf('markers subsets/%s%s', marker_file_name, ext);
     
-    file_name = sprintf('markers subsets/%s%s', file_name, ext);
+    [~,output_file_name,ext] = fileparts(output_mat_file_name);
+    output_file_name = sprintf('markers subsets/%s%s', output_file_name, ext);
+    output_files = {};
     for i=1:length(gene_names)
-        current_marker_file_name = [file_name, num2str(i)];
-        current_output_file = fopen(current_marker_file_name,'w');
+        fprintf('======= Checking without %s ========\n', gene_names{i} );
+        current_marker_file_name = [marker_file_name, num2str(i)];
+        current_output_file_name = [output_file_name, num2str(i)];
+        current_marker_file = fopen(current_marker_file_name,'w');
+        
         current_gene_names = gene_names;
         current_marker_type = marker_type;
         current_gene_names(i) = [];
         current_marker_type(i) = [];
         
-        cellfun(@(x,y) fprintf(current_output_file, '"%s" "%s"\n',x,y) , current_gene_names, current_marker_type)
+        cellfun(@(x,y) fprintf(current_marker_file, '"%s" "%s"\n',x,y) , current_gene_names, current_marker_type)
         
-        run_R_script('do_cellmix',input_mat_file_name, output_mat_file_name,current_marker_file_name);
-        
+        run_R_script('do_cellmix',input_mat_file_name, current_output_file_name,current_marker_file_name);
+        output_files{i} = current_output_file_name;
     end
         
     
