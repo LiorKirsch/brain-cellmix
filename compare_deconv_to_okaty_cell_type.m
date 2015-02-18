@@ -1,4 +1,4 @@
-function compare_deconv_to_okaty_cell_type(cell_mix, gene_info, species,limit_to_cortical_cell_types)
+function aucs = compare_deconv_to_okaty_cell_type(cell_mix, gene_info, species,limit_to_cortical_cell_types)
 
 
     addpath('markers profiles/');
@@ -59,7 +59,7 @@ function compare_deconv_to_okaty_cell_type(cell_mix, gene_info, species,limit_to
     mouse_cell_types.is_neuron = mouse_cell_types.is_neuron(sample_cell_type_id);
     mouse_cell_types.is_astro = mouse_cell_types.is_astro(sample_cell_type_id);
     mouse_cell_types.is_oligo = mouse_cell_types.is_oligo(sample_cell_type_id);
-    drawROC(cell_mix, mouse_cell_types, corr_matrix);
+    aucs = drawROC(cell_mix, mouse_cell_types, corr_matrix);
 
 end
 

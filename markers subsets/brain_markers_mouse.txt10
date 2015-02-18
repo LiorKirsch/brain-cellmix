@@ -1,3 +1,4 @@
+"Stmn2" "Neuron"
 "Celf4" "Neuron"
 "Syt1" "Neuron"
 "Gfap" "Astrocytes"
@@ -6,6 +7,5 @@
 "Slc1a2" "Astrocytes"
 "Gjb6" "Astrocytes"
 "Mbp" "Oligodendrocytes"
-"Sox10" "Oligodendrocytes"
 "Mag" "Oligodendrocytes"
 "Mog" "Oligodendrocytes"

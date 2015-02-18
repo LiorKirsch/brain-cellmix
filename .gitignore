@@ -5,3 +5,4 @@ data/
 figures/
 *.mat
 makers subsets/
+tmp_r_script.r
