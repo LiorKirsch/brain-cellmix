@@ -23,16 +23,22 @@ output_mat_file_name = sprintf('cellmix results/cellmix_%s_nmf.mat', dataset_nam
 % create_data_for_deconv(expression, gene_info,'deconv_input/deconv_for_allen_cortex');
 
 
-output_files = check_different_markers_subsets(input_mat_file_name, output_mat_file_name, markers_file);
-cell_mix = load(output_mat_file_name);
+[output_files,gene_names] = check_different_markers_subsets(input_mat_file_name, output_mat_file_name, markers_file);
 
+aucs = nan(length(gene_names),3);
+for i=1:length(output_files);
+    cell_mix = load(output_files{i});
+    aucs(i,:) = compare_deconv_to_okaty_cell_type(cell_mix, gene_info, 'mouse');
+    title(sprintf('%s - without %s',dataset_name,gene_names{i}));
+end
 
-compare_deconv_to_okaty_cell_type(cell_mix, gene_info, 'mouse');
-title(dataset_name);
-% drawHist(cell_mix, 'Neurons');
-% drawHist(cell_mix, 'Astrocytes');
-% drawHist(cell_mix, 'Oligodendrocytes');
-
+bar(aucs);
+legend({'Astrocytes','Neurons','Oligodendrocytes'})
+ax = gca;
+ax.XTick = 1:length(gene_names);
+ax.XTickLabel = gene_names;
+title('auc without the marker');
+    
 end
 
 function create_data_for_deconv(expression, gene_info, matfile_name)
@@ -51,7 +57,7 @@ function create_data_for_deconv(expression, gene_info, matfile_name)
 
 end
 
-function output_files = check_different_markers_subsets(input_mat_file_name, output_mat_file_name,marker_file_name)
+function [output_files,gene_names] = check_different_markers_subsets(input_mat_file_name, output_mat_file_name,marker_file_name)
     C = textscan(fopen(marker_file_name),'%q %q','HeaderLines',1,'Delimiter',' ');
     gene_names = C{1};
     marker_type = C{2};
