@@ -27,11 +27,11 @@ do_cellmix <- function(input_MAT_filename,output_MAT_filename,marker_file_name,c
   print('applying cellmix')
   if (cellmix_method == "NMF") {
     ################# Use NMF with markers ###############
-    decnvoloved_data <-ged(expression_matrix, brainmarkers,"ssKL", rng = 12345, nrun = 20)
+    decnvoloved_data <-ged(expression_matrix, brainmarkers,"ssKL", rng = 12345, nrun = 50)
   }
   else if (type == "DECONF") {
     ########## use DECONF ############
-    decnvoloved_data <-ged(expression_matrix, brainmarkers,"deconf", rng = 12345, nrun = 20)
+    decnvoloved_data <-ged(expression_matrix, brainmarkers,"deconf", rng = 12345, nrun = 50)
   }
   else {
     print('unknown cellmix option')
