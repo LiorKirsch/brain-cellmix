@@ -87,7 +87,7 @@ function [output_files,gene_names] = check_different_markers_subsets(input_mat_f
         current_gene_names(i) = [];
         current_marker_type(i) = [];
         
-        cellfun(@(x,y) fprintf(current_marker_file, '"%s" "%s"\n',x,y) , current_gene_names, current_marker_type)
+        cellfun(@(x,y) fprintf(current_marker_file, '"%s" "%s"\n',x,y) , current_gene_names, current_marker_type);
         
         if (exist(current_output_file_name, 'file') & skip_existing)
             fprintf('found existing file, skipping ...\n');

@@ -2,10 +2,13 @@ function main_mouse()
 addpath('/home/lab/lior/Projects/load datasets/');
 % Do cellmix for mouse data (Zapala's, Akahoshi's, Allen energy)
 
+
+marker_file_name = 'markers sets/brain_markers_mouse.txt';
 %===  Zapala data  ===
 dataset_name = 'zapala';
+input_mat_file_name = 'deconv input/deconv_for_zapala.mat';
 [expression, gross_region_vec, gene_info, samples2subjects, gross_structures_info, ~] = load_expression_and_regions('zapalaMouse', []);
-% create_data_for_deconv(expression, gene_info,'deconv_input/deconv_for_zapala');
+% create_data_for_deconv(expression, gene_info,input_mat_file_name);
 
 
 %===  Akahoshi data  ===
@@ -19,13 +22,15 @@ dataset_name = 'zapala';
 % [expression, gross_region_vec, gene_info, samples2subjects, gross_structures_info, ~] = load_expression_and_regions('mouse', 'cortex');
 % create_data_for_deconv(expression, gene_info,'deconv_input/deconv_for_allen_cortex');
 
+output_mat_file_name = sprintf('cellmix results/cellmix_%s_nmf.mat', dataset_name);
 
 % load celltype expression from Okaty PLoS One
 
 % do deconvolution using the cell marker with the two methods and compare
 % the expression profile with those collect by Okaty.
 
-cell_mix = load(sprintf('cellmix results/cellmix_%s_nmf.mat', dataset_name));
+% run_R_script('do_cellmix',input_mat_file_name, output_mat_file_name,marker_file_name);
+cell_mix = load(output_mat_file_name);
 % cell_mix = load(sprintf('cellmix_%s_Deconf.mat', dataset_name));
 
 
@@ -71,14 +76,18 @@ function create_data_for_deconv(expression, gene_info, matfile_name)
 
     gene_symbols = gene_info.gene_symbols;
     
-    % replace {'Brunol4'} with Celf4
-    brunol4_ind = find(strcmp(gene_symbols, 'Brunol4' ));
-    gene_symbols(brunol4_ind) = 'Celf4';
+%     % replace {'Brunol4'} with Celf4
+%     brunol4_ind = find(strcmp(gene_symbols, 'Brunol4' ));
+%     gene_symbols{brunol4_ind} = 'Celf4';
 
+    % replace {'Mtap2'} with Map2
+    selected_ind = find(strcmp(gene_symbols, 'A730034C02 /// Mtap2' ));
+    gene_symbols{selected_ind} = 'Map2';
+    
     % make the minimum value zero and not -458
     expression = expression - min(min(expression));
     
     expression = expression';
-    save(sprintf('%s.mat',matfile_name),'expression','gene_symbols');
+    save(matfile_name,'expression','gene_symbols');
 
 end

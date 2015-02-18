@@ -3,6 +3,7 @@
 "Syt1" "Neurons"
 "Gria3" "Neurons"
 "Dlg3" "Neurons"
+"Dlg4" "Neurons"
 "Tubb3" "Neurons"
 "Map2" "Neurons"
 "Gfap" "Astrocytes"
@@ -12,5 +13,4 @@
 "Gjb6" "Astrocytes"
 "Mbp" "Oligodendrocytes"
 "Sox10" "Oligodendrocytes"
-"Mag" "Oligodendrocytes"
 "Mog" "Oligodendrocytes"

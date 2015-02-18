@@ -20,18 +20,18 @@ do_cellmix <- function(input_MAT_filename,output_MAT_filename,marker_file_name,c
   
   # check that the markers are matched
   
-  geneIds(brainmarkers)$Neuron %in% gene_names
+  geneIds(brainmarkers)$Neurons %in% gene_names
   geneIds(brainmarkers)$Astrocytes %in% gene_names
   geneIds(brainmarkers)$Oligodendrocytes %in% gene_names
   
   print('applying cellmix')
   if (cellmix_method == "NMF") {
     ################# Use NMF with markers ###############
-    decnvoloved_data <-ged(expression_matrix, brainmarkers,"ssKL", rng = 12345, nrun = 50)
+    decnvoloved_data <-ged(expression_matrix, brainmarkers,"ssKL", rng = 12345, nrun = 20)
   }
   else if (type == "DECONF") {
     ########## use DECONF ############
-    decnvoloved_data <-ged(expression_matrix, brainmarkers,"deconf", rng = 12345, nrun = 50)
+    decnvoloved_data <-ged(expression_matrix, brainmarkers,"deconf", rng = 12345, nrun = 20)
   }
   else {
     print('unknown cellmix option')
