@@ -34,8 +34,33 @@ function check_corrleation_within_class()
     is_oligo = logical(double(mouse_cell_types.sample2type) * double(mouse_cell_types.is_oligo));
     disp('AUC for cell types - limited to cortex');
     getMeanAUC(corr_cell_types, is_neuron, is_astro, is_oligo);
+    
+    referance_samples = double(mouse_cell_types.sample2type) * ((1:size(mouse_cell_types.sample2type,2))');
+    referance_samples = mouse_cell_types.reference(referance_samples);
+    calcMedianWithinAndOutsideExperiment(mouse_cell_types,corr_cell_types, is_neuron_samples, is_astro_samples, is_oligo_samples,referance_samples);
 end
 
+function calcMedianWithinAndOutsideExperiment(mouse_cell_types,corr_cell_types, is_neuron_samples, is_astro_samples, is_oligo_samples,referance_samples)
+    num_samples = size(corr_cell_types,1);
+    corrs_same_class = nan(num_samples,2);
+    
+    [~, cell_type] = max([is_neuron_samples, is_astro_samples, is_oligo_samples],[],2);
+    for i = 1:num_samples
+        current_sample_referance = referance_samples{i};
+        same_exp = strcmp(current_sample_referance.referance_samples);
+        if is_neuron_samples(i)
+            same_class_not_same_exp = ( is_neuron_samples && ~same_exp );
+        elseif is_astro_samples(i)
+            same_class_not_same_exp = ( is_astro_samples && ~same_exp );
+        elseif is_oligo_samples(i)
+            same_class_not_same_exp = ( is_oligo_samples && ~same_exp );
+        else
+            % do nothing
+        end
+    end
+    
+
+end
 function getMeanAUC(corr_cell_types, is_neuron, is_astro, is_oligo)
 
     neuron_ind = find(is_neuron);

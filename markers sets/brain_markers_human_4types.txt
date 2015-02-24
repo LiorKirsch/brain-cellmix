@@ -8,3 +8,7 @@
 "ALDH1L1" "Astrocytes"
 "OLIG2" "Oligodendrocytes"
 "MBP" "Oligodendrocytes"
+"ALB" "Blood"
+"CP" "Blood"
+"F2" "Blood"
+

@@ -16,6 +16,3 @@
 "Sox10" "Oligodendrocytes"
 "Mag" "Oligodendrocytes"
 "Mog" "Oligodendrocytes"
-"Alb" "Blood"
-"Cp" "Blood"
-"F2" "Blood"

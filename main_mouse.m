@@ -2,13 +2,16 @@ function main_mouse()
 addpath('/home/lab/lior/Projects/load datasets/');
 % Do cellmix for mouse data (Zapala's, Akahoshi's, Allen energy)
 
+algorithem = 'DECONF'; %'NMF'; 'NMFforb'; 'meanProfile'; 'DSA'; 'DECONF';
 
 marker_file_name = 'markers sets/brain_markers_mouse.txt';
+% marker_file_name = 'markers sets/brain_markers_mouse_3types.txt';
+
 %===  Zapala data  ===
 dataset_name = 'zapala';
 input_mat_file_name = 'deconv input/deconv_for_zapala.mat';
 [expression, gross_region_vec, gene_info, samples2subjects, gross_structures_info, ~] = load_expression_and_regions('zapalaMouse', []);
-% create_data_for_deconv(expression, gene_info,input_mat_file_name);
+create_data_for_deconv(expression, gene_info,input_mat_file_name);
 
 
 %===  Akahoshi data  ===
@@ -22,19 +25,19 @@ input_mat_file_name = 'deconv input/deconv_for_zapala.mat';
 % [expression, gross_region_vec, gene_info, samples2subjects, gross_structures_info, ~] = load_expression_and_regions('mouse', 'cortex');
 % create_data_for_deconv(expression, gene_info,'deconv_input/deconv_for_allen_cortex');
 
-output_mat_file_name = sprintf('cellmix results/cellmix_%s_nmf.mat', dataset_name);
+output_mat_file_name = sprintf('cellmix results/cellmix_%s_%s.mat', dataset_name,algorithem);
 
 % load celltype expression from Okaty PLoS One
 
 % do deconvolution using the cell marker with the two methods and compare
 % the expression profile with those collect by Okaty.
 
-% run_R_script('do_cellmix',input_mat_file_name, output_mat_file_name,marker_file_name);
+run_R_script('do_cellmix',input_mat_file_name, output_mat_file_name,marker_file_name,algorithem);
 cell_mix = load(output_mat_file_name);
 % cell_mix = load(sprintf('cellmix_%s_Deconf.mat', dataset_name));
 
 
-compare_deconv_to_okaty_cell_type(cell_mix, gene_info, 'mouse');
+[aucs,median_within, median_outside] = compare_deconv_to_okaty_cell_type(cell_mix, gene_info, 'mouse');
 title(dataset_name);
 % drawHist(cell_mix, 'Neurons');
 % drawHist(cell_mix, 'Astrocytes');

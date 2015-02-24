@@ -4,5 +4,5 @@ cellmix results/
 data/
 figures/
 *.mat
-makers subsets/
+markers subsets/
 tmp_r_script.r

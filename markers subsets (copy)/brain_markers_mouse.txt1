@@ -1,5 +1,4 @@
 "GENE NAME" "Class name"
-"Stmn2" "Neurons"
 "Celf4" "Neurons"
 "Syt1" "Neurons"
 "Gria3" "Neurons"
@@ -16,6 +15,3 @@
 "Sox10" "Oligodendrocytes"
 "Mag" "Oligodendrocytes"
 "Mog" "Oligodendrocytes"
-"Alb" "Blood"
-"Cp" "Blood"
-"F2" "Blood"
