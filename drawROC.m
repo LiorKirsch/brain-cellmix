@@ -17,6 +17,9 @@ function aucs = drawROC(cell_mix, mouse_cell_types, corr_matrix)
             otherwise
                 labels = nan;
         end
+        if all(labels==0)
+            labels = nan;
+        end
         fprintf('roc for %s\n',  cell_mix.cell_types{i} );
         scores = corr_matrix(:,i);
         if isnan(labels)

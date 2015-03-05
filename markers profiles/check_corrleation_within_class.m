@@ -5,11 +5,11 @@ function check_corrleation_within_class()
     addpath('markers profiles/');
     mouse_cell_types = load('mouse_cell_type_profiles.mat');
    
-    [mouse_cell_types,sep_ind_neuron,sep_ind_astro,~] = order_sample_by_type(mouse_cell_types);
+    [mouse_cell_types,seperation_indcies,cell_types_names] = order_sample_by_type(mouse_cell_types,false);
     
     corr_cell_types = corr(mouse_cell_types.expression);
 
-    draw_imagesc_with_seperation(corr_cell_types, sep_ind_neuron, sep_ind_astro);
+    draw_imagesc_with_seperation(corr_cell_types, seperation_indcies(1),seperation_indcies(2));
     title('cell type correlation');
     
     
@@ -19,13 +19,14 @@ function check_corrleation_within_class()
     disp('AUC for cell types');
     getMeanAUC(corr_cell_types, is_neuron, is_astro, is_oligo);
 
-    
-    mouse_cell_types = limit_to_samples_from_cortex(mouse_cell_types);
-    [mouse_cell_types,sep_ind_neuron,sep_ind_astro,~] = order_sample_by_type(mouse_cell_types);
-    
+    %========== Limit to cell types from cortex ======
+    mouse_cell_types = load('mouse_cell_type_profiles.mat');
+   
+    [mouse_cell_types,seperation_indcies,cell_types_names] = order_sample_by_type(mouse_cell_types,true);
+   
     corr_cell_types = corr(mouse_cell_types.expression);
 
-    draw_imagesc_with_seperation(corr_cell_types, sep_ind_neuron, sep_ind_astro);
+    draw_imagesc_with_seperation(corr_cell_types, seperation_indcies(1), seperation_indcies(2));
     title('cell type correlation - limited to cortex');
     
     
@@ -116,7 +117,7 @@ end
 
 
 function draw_imagesc_with_seperation(matrix_to_draw, sep_index1, sep_index2)
-     
+      num_okaty_celltype = size(matrix_to_draw,1);
     figure; hold on;
      imagesc(matrix_to_draw);  
      colormap(jet); 
@@ -143,6 +144,15 @@ function draw_imagesc_with_seperation(matrix_to_draw, sep_index1, sep_index2)
     axis ij;
     ylim([1 size(matrix_to_draw,1)]);
     
+       
+    ax = gca;
+    ax.YTick = [ round((1 + sep_index1)/2), round((sep_index1 + sep_index2)/2), round((sep_index2 + num_okaty_celltype)/2)];
+    ax.YTickLabel = {'Neurons', 'Astrocytes', 'Oligodendrocytes'};
+    
+    ax.XTick = [ round((1 + sep_index1)/2), round((sep_index1 + sep_index2)/2), round((sep_index2 + num_okaty_celltype)/2)];
+    ax.XTickLabel = {'Neurons', 'Astrocytes', 'Oligodendrocytes'};
+    ax.XTickLabelRotation = 45;
+
 %      matrix_to_draw2 = [matrix_to_draw(1:sep_index1,:); -10*ones(3,3); matrix_to_draw( (sep_index1+1):(sep_index2 ) ,:); -10*ones(3,3); matrix_to_draw((sep_index2+1): end,:) ];
 %      imagesc(matrix_to_draw2);
 %      

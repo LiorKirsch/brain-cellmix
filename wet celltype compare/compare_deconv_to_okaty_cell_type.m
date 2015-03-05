@@ -12,13 +12,11 @@ function [aucs,median_within, median_outside] = compare_deconv_to_okaty_cell_typ
     % 
     % mouse_cell_types.expression = mouse_cell_types.expression(found_translation,:);
     % mouse_cell_types.gene_affi_id = mouse_cell_types.gene_affi_id(found_translation);
-
+    
     if ~exist('limit_to_cortical_cell_types','var');
         limit_to_cortical_cell_types = false;
     end
-
-    [mouse_cell_types,sep_ind_neuron,sep_ind_astro,~] = order_sample_by_type(mouse_cell_types, limit_to_cortical_cell_types);
-
+    [mouse_cell_types,seperation_indices, cell_type_order] = order_sample_by_type(mouse_cell_types, limit_to_cortical_cell_types);
     
     switch species
         case 'mouse'
@@ -46,7 +44,7 @@ function [aucs,median_within, median_outside] = compare_deconv_to_okaty_cell_typ
     end
 
     corr_matrix = corr(reorder_mouse_cell_type_expresion, reorder_cellmix_expresion, 'type','spearman');
-    draw_imagesc_with_seperation(corr_matrix,sep_ind_neuron,sep_ind_astro);
+    draw_imagesc_with_seperation(corr_matrix,seperation_indices,cell_type_order);
 
     ax = gca;
     ax.XTick = 1:length(cell_mix.cell_types);
@@ -54,7 +52,7 @@ function [aucs,median_within, median_outside] = compare_deconv_to_okaty_cell_typ
     % ax.YTick = 1:length(mouse_cell_types.cellTypesDescription);
     % ax.YTickLabel = mouse_cell_types.cellTypesDescription;
     figure;
-    single_sample_scatter(reorder_mouse_cell_type_expresion(:,28), reorder_cellmix_expresion(:,strcmp('Neurons',cell_mix.cell_types)));
+%     single_sample_scatter(reorder_mouse_cell_type_expresion(:,28), reorder_cellmix_expresion(:,strcmp('Neurons',cell_mix.cell_types)));
     
     sample_cell_type_id =double(mouse_cell_types.sample2type) * ( ( 1:size(mouse_cell_types.sample2type,2))');
     mouse_cell_types.is_neuron = mouse_cell_types.is_neuron(sample_cell_type_id);
@@ -78,46 +76,4 @@ function [median_within, median_outside] = compute_median_corr(corr_matrix, mous
     median_within = [astro_median_same, neuron_median_same, oligo_median_same];
     median_outside = [astro_median_diff, neuron_median_diff, oligo_median_diff];
 end
-function draw_imagesc_with_seperation(matrix_to_draw, sep_index1, sep_index2)
-     num_okaty_celltype = size(matrix_to_draw,1);
-    figure; hold on;
-     imagesc(matrix_to_draw);  
-     colormap(jet); 
-     colorbar;
-     
-    x = [0.5 ,size(matrix_to_draw,2)+0.5];
-    
-    y = [sep_index1 ,sep_index1];
-    plot(x,y,'Color','w','LineStyle','-');
-    plot(x,y,'Color','k','LineStyle',':');
-    
-    y = [sep_index2 sep_index2];
-    plot(x,y,'Color','w','LineStyle','-');
-    plot(x,y,'Color','k','LineStyle',':');
-    hold off;
-    
-    axis ij;
-    ylim([1 size(matrix_to_draw,1)]);
-    
-    ax = gca;
-    ax.YTick = [ round((1 + sep_index1)/2), round((sep_index1 + sep_index2)/2), round((sep_index2 + num_okaty_celltype)/2)];
-    ax.YTickLabel = {'Neurons', 'Astrocytes', 'Oligodendrocytes'};
-    
-%      matrix_to_draw2 = [matrix_to_draw(1:sep_index1,:); -10*ones(3,3); matrix_to_draw( (sep_index1+1):(sep_index2 ) ,:); -10*ones(3,3); matrix_to_draw((sep_index2+1): end,:) ];
-%      imagesc(matrix_to_draw2);
-%      
-end
 
-function single_sample_scatter(measured_profile, predicted_profile)
-    transparentScatter(measured_profile, predicted_profile,0.005,0.2);
-%     scatter(measured_profile, predicted_profile,'.')
-    title(sprintf('spearman - %g', corr(measured_profile, predicted_profile,'type','spearman')));
-    xlabel('measured profile');
-    ylabel('predicted profile');
-    axis equal;
-end
-function [reorder_A, reorder_B] = reorderUsingId(IdA, IdB)
-    intersection_ids = intersect(IdA, IdB);
-    [~, reorder_A] = ismember(intersection_ids, IdA);
-    [~, reorder_B] = ismember(intersection_ids, IdB);
-end

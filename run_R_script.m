@@ -13,4 +13,6 @@ fprintf(fid,'source("cellmix_func.R")\n');
 fprintf(fid,'%s("%s","%s","%s","%s") \n' ,r_function_name,input_MAT_file,output_MAT_file,marker_file,alg);
 fclose(fid);
 
+fprintf('Running:  %s("%s","%s","%s","%s") \n' ,r_function_name,input_MAT_file,output_MAT_file,marker_file,alg);
+
 end

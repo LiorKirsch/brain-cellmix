@@ -3,32 +3,37 @@ function main_human()
 
 % create_adult_only_mat();
 % cell_type_mix_corr();
-
+% create_adult_cerebellum_only_mat('data/kang_cerebellum_samples_adults.mat');
+addpath('wet celltype compare/');
 algorithem = 'DECONF'; %'NMF'; 'NMFforb'; 'meanProfile'; 'DSA'; 'DECONF';
-
-marker_file_name = 'markers sets/brain_markers_human_4types.txt';
-% marker_file_name = 'markers sets/brain_markers_human.txt';
+markers_flag = ''; %'' ; '_with_blood'
 
 
 %============ Kang dataset ==================
-% dataset_name = 'kang adults';
-% human_data = load('data/kang_samples_adults.mat');
-% only_cortex_celltypes = false;
-% input_mat_file_name = 'deconv input/deconv_for_kang.mat';
+dataset_name = 'kang adults';
+human_data = load('data/kang_samples_adults.mat');
+only_cortex_celltypes = false;
+input_mat_file_name = 'deconv input/deconv_for_kang.mat';
 
 
-%============ Kang adults dataset ===========
-dataset_name = 'kang cortex';
-human_data = load('data/kang_cortex_samples_adults.mat');
-only_cortex_celltypes = true;
-input_mat_file_name = 'deconv input/deconv_for_kang_cortex.mat';
+%============ Kang cortex dataset ===========
+% dataset_name = 'kang cortex';
+% human_data = load('data/kang_cortex_samples_adults.mat');
+% only_cortex_celltypes = true;
+% input_mat_file_name = 'deconv input/deconv_for_kang_cortex.mat';
+
+%============ Kang cerebellum dataset ===========
+% dataset_name = 'kang cerebellum';
+% human_data = load('data/kang_cerebellum_samples_adults.mat');
+% only_cortex_celltypes = true;
+% input_mat_file_name = 'deconv input/deconv_for_kang_cerebellum.mat';
 
 
 create_data_for_deconv(human_data.data, human_data.gene_names, input_mat_file_name)
 
-
-output_mat_file_name = sprintf('cellmix results/%s_%s.mat', dataset_name,algorithem);
-run_R_script('do_cellmix',input_mat_file_name, output_mat_file_name,marker_file_name,algorithem);
+marker_file_name = sprintf('markers sets/brain_markers_human%s.txt',markers_flag);
+output_mat_file_name = sprintf('cellmix results/%s_%s%s.mat', dataset_name,algorithem, markers_flag);
+% run_R_script('do_cellmix',input_mat_file_name, output_mat_file_name,marker_file_name,algorithem);
 
 cell_mix = load(output_mat_file_name);
 
@@ -40,6 +45,12 @@ cell_mix = load(output_mat_file_name);
 gene_info.gene_symbols = human_data.gene_names;
 gene_info.entrez_ids = arrayfun(@(x) sprintf('%d', x),human_data.gene_entrez,'UniformOutput', false);
 
+mask_regions = any(human_data.samples2regions,1);
+human_data.samples2regions = human_data.samples2regions(:,mask_regions);
+human_data.region_names = human_data.region_names(mask_regions);
+gross_region_vec = human_data.samples2regions * ((1:size(human_data.samples2regions,2))');
+draw_proprtions_for_regions(cell_mix.proportions, cell_mix.cell_types, human_data.region_names, gross_region_vec); ylim([0,0.8]);
+compare_deconv_to_giger_cell_type(cell_mix, gene_info, 'human',only_cortex_celltypes);
 compare_deconv_to_okaty_cell_type(cell_mix, gene_info, 'human',only_cortex_celltypes);
 title(dataset_name);
 
@@ -91,6 +102,24 @@ kang_data = load('/cortex/data/microarray/human/Kang2011/kang_samples_with_ontol
 end
 
 
+function create_adult_cerebellum_only_mat(mat_file_name)
+
+ kang_data = load('/cortex/data/microarray/human/Kang2011/kang_samples_with_ontology.mat');
+ only_adult_samples_mask = kang_data.samples2periods(:,11:end);
+ only_adult_samples_mask = any(only_adult_samples_mask,2);
+ 
+ filter_only_regions = {'cerebellar cortex'};
+ cortex_regions = ismember(kang_data.region_names, filter_only_regions);
+ only_cortex_samples_mask = kang_data.samples2regions(:,cortex_regions);
+ only_cortex_samples_mask = any(only_cortex_samples_mask,2);
+ 
+ samples_mask = only_cortex_samples_mask & only_adult_samples_mask;
+ 
+ kang_data = filter_sample_in_kang(kang_data,samples_mask);
+ 
+  save(mat_file_name,'-struct','kang_data');
+ 
+end
 
 
 function create_adult_cortex_only_mat(mat_file_name)
@@ -106,16 +135,20 @@ function create_adult_cortex_only_mat(mat_file_name)
  
  samples_mask = only_cortex_samples_mask & only_adult_samples_mask;
  
- kang_data.samples2periods(~samples_mask,:) = [];
- kang_data.samples2regions(~samples_mask,:) = [];
- kang_data.subject_id(~samples_mask,:) = [];
- kang_data.hemisphere(~samples_mask,:) = [];
- kang_data.data(:, ~samples_mask) = [];
+ kang_data = filter_sample_in_kang(kang_data,samples_mask);
  
   save(mat_file_name,'-struct','kang_data');
  
 end
 
+function kang_data = filter_sample_in_kang(kang_data,samples_mask)
+     
+     kang_data.samples2periods(~samples_mask,:) = [];
+     kang_data.samples2regions(~samples_mask,:) = [];
+     kang_data.subject_id(~samples_mask,:) = [];
+     kang_data.hemisphere(~samples_mask,:) = [];
+     kang_data.data(:, ~samples_mask) = [];
+end
 
 function create_data_for_deconv(expression, gene_symbols, matfile_name)
 
